@@ -11,6 +11,7 @@ before_install:
 install:
   go get github.com/gin-gonic/gin
   go get gopkg.in/mgo.v2
+  go get github.com/nu7hatch/gouuid
 
 services:
   - mongodb
