@@ -12,3 +12,8 @@ type RegisterForm struct {
 }
 
 
+type CheckSession struct {
+    SessionToken string `form:"session_token" binding:"required" `
+}
+
+

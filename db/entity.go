@@ -1,5 +1,7 @@
 package db
-import "gopkg.in/mgo.v2/bson"
+import (
+    "time"
+)
 
 type CounterEntity struct {
     Id string `bson:"_id"`
@@ -11,11 +13,13 @@ type UserEntity struct {
     Username string `bson:"username"`
     PassHash string `bson:"pass_hash"`
     Email string `bson:"email"`
-    RegisteredAt bson.MongoTimestamp `bson:"registered_at"`
+    RegisteredAt time.Time `bson:"registered_at"`
 }
 
 
 type UserSession struct {
-    User UserEntity `bson:"user"`
-    StartedAt bson.MongoTimestamp `bson:"started_at"`
+    User int64 `bson:"user" json:"user" `
+    SessionToken string `bson:"session_token" json:"session_token"`
+    StartedAt time.Time `bson:"started_at" json:"started_at"`
+    ActiveTo time.Time `bson:"active_to" json:"active_to"`
 }

@@ -3,6 +3,9 @@ import (
     "gopkg.in/mgo.v2"
     "gopkg.in/mgo.v2/bson"
     "log"
+    "time"
+    "github.com/nu7hatch/gouuid"
+
 )
 
 var session *mgo.Session
@@ -92,7 +95,7 @@ func AddUser(user UserEntity) (error, UserEntity) {
     log.Println(result_o)
 
     user.Id = int64(result_o["retval"].(float64))
-
+    user.RegisteredAt = time.Now()
     err = c.Insert(&user)
     if err != nil {
         log.Fatal(err)
@@ -103,10 +106,30 @@ func AddUser(user UserEntity) (error, UserEntity) {
 }
 
 
-func StartSession(user UserEntity) (UserSession, error) {
+func StartSession(user UserEntity, live_time int32) (UserSession, error) {
     c := session.DB("letitbe").C("session")
     var user_session UserSession
-    user_session.User = user
-    err := c.Insert(&user_session)
+    var session_token *uuid.UUID
+    var err error
+    user_session.User = user.Id
+    user_session.StartedAt = time.Now()
+    user_session.ActiveTo = user_session.StartedAt.Add(time.Duration(live_time)*time.Second)
+    session_token,err = uuid.NewV4()
+    user_session.SessionToken = session_token.String()
+    if err != nil {
+        return user_session, err
+    }
+
+    err = c.Insert(&user_session)
     return user_session, err
+}
+
+func FindSession(session_token string)(error, UserSession) {
+    var session UserSession
+    var err error
+    err = db_inst.C("session").Find(bson.M{"session_token": session_token}).One(&session)
+    if err != nil {
+        return err, session
+    }
+    return err, session
 }
