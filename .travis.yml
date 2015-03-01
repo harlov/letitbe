@@ -10,8 +10,7 @@ before_install:
 
 install:
   go get github.com/gin-gonic/gin
+  go get gopkg.in/mgo.v2
 
 services:
   - mongodb
-
-script: go test ./...
